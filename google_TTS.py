@@ -41,7 +41,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 #        article_url = redirect_anews(article_url)
 #    rt = calc_readtime(get_text(article_url))
 
-text = get_safe_text()
+text = get_safe_text().replace('—', ', ')
 rt = calc_readtime(text)
 print_readtime(rt)
 
@@ -53,7 +53,7 @@ print(' requesting gTTS')
 headers = {'Content-Type': 'application/json'}
 params = {#"ARTICLE_URL": article_url,
           "ARTICLE_TEXT": text,
-          "SPEECH_SPEED": .93}
+          "SPEECH_SPEED": 1.1}
 
 resp = requests.post(api_url,
                      headers=headers, 

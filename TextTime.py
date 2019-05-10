@@ -2,7 +2,7 @@ from AppleNewsUtils import *
 from Utils import *
 
 
-def calc_readtime(text, wpm=150):
+def calc_readtime(text, wpm=160):
     words = split_words(text)
     word_counts = len(words)
     return word_counts / wpm
