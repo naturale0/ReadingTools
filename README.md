@@ -1,5 +1,5 @@
 # ReadingTools
-Tools reagarding to reading texts on iPhone, designed for 'Pythonista for iOS'.
+is a set of Tools regarding to reading texts on iPhone, designed for 'Pythonista for iOS'.
 
 You can
 * calculate estimated reading time of the text
