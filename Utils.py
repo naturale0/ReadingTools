@@ -27,14 +27,14 @@ def get_safe_text():
     
     if url_ext:
         if check_anews(url_ext):
-            url = redirect_url(url_ext)
+            url = redirect_anews(url_ext)
             return get_text(url)
         else:
             return get_text(url_ext)
     elif url_clp:
         if url_clp.startswith('http'):
             if check_anews(url_clp):
-                url = redirect_url(url_clp)
+                url = redirect_anews(url_clp)
                 return get_text(url)
             else:
                 return get_text(url_clp)
