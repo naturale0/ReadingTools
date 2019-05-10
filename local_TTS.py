@@ -1,7 +1,6 @@
-from reading_time import get_text
+from Utils import *
 from objc_util import *
-import appex
-import clipboard
+from AppleNewsUtils import *
 import random
 
 
@@ -36,12 +35,11 @@ def select_voices():
     
 
 if __name__ == '__main__':
-    url = appex.get_url()
+    text = get_safe_text()
+    text.replace('\n', '.\n')
+    
     voices = select_voices()
-    if url is None:
-        speak_(clipboard.get(), voices)
-    else:
-        speak_(get_text(url), voices)
+    speak_(text, voices)
     
     
     

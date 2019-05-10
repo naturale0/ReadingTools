@@ -1,43 +1,48 @@
 import requests
 import json
-import appex
-import sound
-import clipboard
-import webbrowser
-import sound
 import sys
 import os
 import time
 import pickle
-from rtime import get_text, calc_readtime, print_readtime, print_ttstime
+
+import appex
+import webbrowser
+import sound
+
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-from appleNewsUtils import get_redirect_url
+
+from TextTime import *
+from AppleNewsUtils import *
+from Utils import *
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
-article_url = appex.get_url()
-article_text = ''
-if not article_url:
-    article_text = appex.get_text()
-    if not article_text:
-        copied = clipboard.get()
-        if not copied.startswith('http'):
-            article_text = copied
-            article_url = ''
-            rt = calc_readtime(article_text)
-        else:
-            article_text = ''
-            article_url = copied
-            if article_url.startswith('https://apple.news'):
-                article_url = get_redirect_url(article_url)
-            rt = calc_readtime(get_text(article_url))
-    else:
-        rt = calc_readtime(article_text)
-else:
-    if article_url.startswith('https://apple.news'):
-        article_url = get_redirect_url(article_url)
-    rt = calc_readtime(get_text(article_url))
+#article_url = appex.get_url()
+#article_text = ''
+#if not article_url:
+#    article_text = appex.get_text()
+#    if not article_text:
+#        copied = clipboard.get()
+#        if not copied.startswith('http'):
+#            article_text = copied
+#            article_url = ''
+#            rt = calc_readtime(article_text)
+#        else:
+#            article_text = ''
+#            article_url = copied
+#            if check_anews(article_url):
+#                article_url = redirect_anews(article_url)
+#            rt = calc_readtime(get_text(article_url))
+#    else:
+#        rt = calc_readtime(article_text)
+#else:
+#    if check_anews(article_url):
+#        article_url = redirect_anews(article_url)
+#    rt = calc_readtime(get_text(article_url))
+
+text = get_safe_text()
+rt = calc_readtime(text)
 print_readtime(rt)
 
 with open('CONFIDENTIAL', 'rb') as rb:
@@ -46,8 +51,8 @@ print(' requesting gTTS')
 
 
 headers = {'Content-Type': 'application/json'}
-params = {"ARTICLE_URL": article_url,
-          "ARTICLE_TEXT": article_text,
+params = {#"ARTICLE_URL": article_url,
+          "ARTICLE_TEXT": text,
           "SPEECH_SPEED": .93}
 
 resp = requests.post(api_url,

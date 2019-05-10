@@ -1,8 +1,5 @@
-from bs4 import BeautifulSoup
-import requests
-import appex
-import clipboard
-
+from AppleNewsUtils import *
+from Utils import *
 
 
 def calc_readtime(text, wpm=150):
@@ -35,23 +32,10 @@ def print_ttstime(duration):
     print(rtstr)
     return rtstr
 
-def get_text(url):
-    soup = BeautifulSoup(requests.get(url).text, 'html5lib')
-    paragraphs = soup.find_all('p')
-    text = ' '.join(list(map(p2text, paragraphs)))
-    return text
-
-def p2text(p):
-    return p.text
-
 
 if __name__ == '__main__':
-    url = appex.get_url()
     print(' please wait..')
+    text = get_safe_text()
     
-    if url is None:
-        text = clipboard.get()
-    else:
-        text = get_text(url) 
     rt = calc_readtime(text)
     print_readtime(rt)
