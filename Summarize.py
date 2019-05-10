@@ -132,7 +132,7 @@ def index_sentence_scores(sentence_scores):
     return sorted(range(len(sentence_scores)), key=lambda k: sentence_scores[k], reverse=True)
 
 
-def summarize(article, n_sentences=None, length_penalty=0):
+def summarize(article, n_sentences=None, length_penalty=0, print_summary=True):
     """
     generate summary of the input article.
     """
@@ -158,13 +158,14 @@ def summarize(article, n_sentences=None, length_penalty=0):
     if summary[0].startswith("But"):
         summary[0] = summary[0].replace("But", "")[1:].strip().capitalize()
     
-    print ("=" * 35)
-    print ("="*14 + f"{n_sentences} LINES" +"="*14 + "\n")
-    
     summary_text = "\n\n".join(summary)
-    print (summary_text + "\n")
-    
-    print ("=" * 35)
+    if print_summary:
+        print ("=" * 35)
+        print ("="*14 + f"{n_sentences} LINES" +"="*14 + "\n")
+        
+        print (summary_text + "\n")
+        
+        print ("=" * 35)
     
     return summary_text
 
@@ -178,6 +179,7 @@ if __name__ == '__main__':
         
         clipboard.set(text)
         webbrowser.open(f'pythonista://ReadingTools/Summarize.py?action=run')
+        sys.exit()
         
     else:
         text = get_safe_text()

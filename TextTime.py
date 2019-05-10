@@ -1,5 +1,6 @@
 from AppleNewsUtils import *
 from Utils import *
+from sound import Player
 
 
 def calc_readtime(text, wpm=160):
@@ -24,7 +25,8 @@ def print_readtime(read_time):
     print(rtstr)
     return rtstr
 
-def print_ttstime(duration):
+def print_ttstime(fpath):
+    duration = Player(fpath).duration
     min = duration // 60
     sec = duration % 60
     
