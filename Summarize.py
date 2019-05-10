@@ -5,6 +5,9 @@ from nltk.stem import PorterStemmer
 from collections import Counter
 from AppleNewsUtils import *
 from Utils import *
+import appex
+import clipboard
+import webbrowser
 
 
 contractions = {
@@ -129,7 +132,7 @@ def index_sentence_scores(sentence_scores):
     return sorted(range(len(sentence_scores)), key=lambda k: sentence_scores[k], reverse=True)
 
 
-def summarize(article, n_sentences=None, length_penalty=0.33):
+def summarize(article, n_sentences=None, length_penalty=0):
     """
     generate summary of the input article.
     """
@@ -168,14 +171,22 @@ def summarize(article, n_sentences=None, length_penalty=0.33):
 
 if __name__ == '__main__':
     print(' working on it...')
-    text = get_safe_text()
+    
+    if appex.is_running_extension():
+        text = get_safe_text()
+        print(' handing over to the main app')
+        
+        clipboard.set(text)
+        webbrowser.open(f'pythonista://ReadingTools/Summarize.py?action=run')
+        
+    else:
+        text = get_safe_text()
     
     rephrase = None
-    while True:
-        summary = summarize(text, rephrase)
-        
-        try:
-            rephrase = int(input("rephrase with how many sentences?: "))
-        except ValueError:
-            break
+    #while True:
+    summary = summarize(text, rephrase)
+    #try:
+    #    rephrase = int(input("rephrase with how many sentences?: "))
+    #except ValueError:
+    #    break
 
