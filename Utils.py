@@ -1,6 +1,7 @@
 import platform
 import appex
 import clipboard
+import os
 import re
 import requests
 from AppleNewsUtils import *
@@ -45,3 +46,10 @@ def get_safe_text():
     else:
         raise ValueError('no text or url received from app extension or clipboard')
     
+    
+def get_script_path():
+    pwd = os.path.normpath(os.getcwd())
+    paths = pwd.split(os.sep)
+    st = paths.index("Documents")
+    path = os.path.join(*paths[st+1:])
+    return path

@@ -5,6 +5,7 @@ from nltk.stem import PorterStemmer
 from collections import Counter
 from AppleNewsUtils import *
 from Utils import *
+import os
 import sys
 import appex
 import clipboard
@@ -193,9 +194,10 @@ if __name__ == '__main__':
     if appex.is_running_extension():
         text = get_safe_text()
         print(' handed over to the main app')
-        
         clipboard.set(text)
-        webbrowser.open(f'pythonista://ReadingTools/Summarize.py?action=run')
+        
+        path = get_script_path()
+        webbrowser.open(f'pythonista://{path}/Summarize.py?action=run')
         sys.exit()
         
     else:

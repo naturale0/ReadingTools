@@ -53,9 +53,10 @@ def main(summary=False, voice=None):
     text = get_safe_text().replace('—', ', ')
     if summary & appex.is_running_extension():
         print(' handed over to the main app')
-        
         clipboard.set(text)
-        webbrowser.open(f'pythonista://ReadingTools/google_TTS.py?action=run&argv=1')
+        
+        path = get_script_path()
+        webbrowser.open(f'pythonista://{path}/google_TTS.py?action=run&argv=1')
         return
     
     if summary:
@@ -73,7 +74,9 @@ def main(summary=False, voice=None):
     
     print_ttstime(out_path)
     time.sleep(.5)
-    webbrowser.open(f'pythonista://ReadingTools/{out_path}')
+    
+    path = get_script_path()
+    webbrowser.open(f'pythonista://{path}/{out_path}')
     
     if appex.is_running_extension():
         remove = input(' remove audio? [Y/n] ')
