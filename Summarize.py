@@ -5,6 +5,7 @@ from nltk.stem import PorterStemmer
 from collections import Counter
 from AppleNewsUtils import *
 from Utils import *
+import sys
 import appex
 import clipboard
 import webbrowser
@@ -30,11 +31,12 @@ contractions = {
     "he'd've": "he would have"
 }
 punctuations = {
-    "â€™": "'",
-    "â€œ": '"',
-    "â€˜": "'",
-    "â€": '"',
-    "â€”": "-"
+    "’": "'",
+    "“": '"',
+    "‘": "'",
+    "”": '"',
+    "—": "-",
+    "…": "."
 }
 
 replace_dict = contractions.copy()
@@ -84,24 +86,30 @@ def split_sentences(article):
     return sentences  # list of sentences
 
 
-def score_words(article):
-    # tokenize words
-    tokenized_words = word_tokenize(preprocess(article))
-    
-    stop_words = stopwords.words('english')
-    stop_words += ["ms.", "mr.", "'s"]#, "said"]
-    punctuations = ["?", "!", ",", ".", ":", ";", "\"", "'", "''", "``"]
+stop_words = stopwords.words('english')
+stop_words += ["ms.", "mr.", "'s"]
+punctuations = ["?", "!", ",", ".", ":", ";", "\"", "'", "''", "``", "-", "(", ")"]
+unimportant = ['said', 'says', 'day', 'may', '©', 'whether', '%', 'n\'t']
+pass_words = stop_words + punctuations + unimportant
 
-    tokenized_words = [w.lower() for w in tokenized_words if w.lower() not in stop_words]
-    tokenized_words = [w for w in tokenized_words if w not in punctuations]
+def token_lemma_stem(text):
+    # 1. tokenize words
+    tokenized_words = word_tokenize(preprocess(text))
+
+    tokenized_words = [w.lower() for w in tokenized_words if w.lower() not in pass_words]
     
-    # lemmatize words
+    # 2. lemmatize words
     lemmatizer = wordnet.WordNetLemmatizer()
     tokenized_words = [lemmatizer.lemmatize(w.lower()) for w in tokenized_words]
-    #print(tokenized_words)
-    # stem words with PorterStemmer
+    
+    # 3. stem words with PorterStemmer
     porter = PorterStemmer()
     tokenized_words = [porter.stem(w) for w in tokenized_words]
+    return tokenized_words
+
+
+def score_words(article):
+    tokenized_words = token_lemma_stem(article)
     
     scores = Counter(tokenized_words)
     return scores
@@ -118,6 +126,7 @@ def score_sentences(sentences, scores, length_penalty):
     top50 = scores.most_common()[:50]
     sentence_scores = []
     for sentence in sentences:
+        sentence = ' '.join(token_lemma_stem(sentence))
         score = 0
         for word, word_score in top50:
             score += sentence.lower().count(word) * word_score
@@ -155,10 +164,18 @@ def summarize(article, n_sentences=None, length_penalty=0, print_summary=True):
     summary = [sentences[idx] for idx in sorted_idx]
     
     # clean summary texts
-    if summary[0].startswith("But"):
-        summary[0] = summary[0].replace("But", "")[1:].strip().capitalize()
+    starters = ('But', 'So')
+    for s in starters:
+        if summary[0].startswith(s):
+            summary[0] = summary[0].replace(s, "")[1:].lstrip(',').strip().capitalize()
     
+    # select keywords to report
+    keywords = word_scores.most_common()[:10]
+    keywords = ', '.join([i[0] for i in keywords])
+    
+    # combine into one big string
     summary_text = "\n\n".join(summary)
+    summary_text += f"\n\n\n [KEYWORDS] {keywords}"
     if print_summary:
         print ("=" * 35)
         print ("="*14 + f"{n_sentences} LINES" +"="*14 + "\n")
@@ -175,7 +192,7 @@ if __name__ == '__main__':
     
     if appex.is_running_extension():
         text = get_safe_text()
-        print(' handing over to the main app')
+        print(' handed over to the main app')
         
         clipboard.set(text)
         webbrowser.open(f'pythonista://ReadingTools/Summarize.py?action=run')

@@ -31,6 +31,8 @@ def get_safe_text():
             return get_text(url)
         else:
             return get_text(url_ext)
+    elif txt_ext:
+        return txt_ext
     elif url_clp:
         if url_clp.startswith('http'):
             if check_anews(url_clp):
@@ -40,8 +42,6 @@ def get_safe_text():
                 return get_text(url_clp)
         else:
             return url_clp
-    elif txt_ext:
-        return txt_ext
     else:
         raise ValueError('no text or url received from app extension or clipboard')
     

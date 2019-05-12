@@ -15,13 +15,14 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
-def prepare_payloads(text, speed=1.1):
+def prepare_payloads(text, speed=1, voice=None):
     with open('CONFIDENTIAL', 'rb') as rb:
         api_url, userinfo = pickle.load(rb)
     headers = {'Content-Type': 'application/json'}
     params = {#"ARTICLE_URL": article_url,
               "ARTICLE_TEXT": text,
-              "SPEECH_SPEED": speed}
+              "SPEECH_SPEED": speed,
+              "VOICE_ALPHABET": voice}
     return [api_url, userinfo, headers, params]
 
 
@@ -48,11 +49,10 @@ def write_mp3(resp, fname='gTTS-output'):
     return out_path
     
 
-def main(summary=False):
+def main(summary=False, voice=None):
     text = get_safe_text().replace('—', ', ')
     if summary & appex.is_running_extension():
-        print(' handing over to the main app')
-        time.sleep(.5)
+        print(' handed over to the main app')
         
         clipboard.set(text)
         webbrowser.open(f'pythonista://ReadingTools/google_TTS.py?action=run&argv=1')
@@ -67,7 +67,7 @@ def main(summary=False):
     rt = calc_readtime(text)
     print_readtime(rt)
     
-    payloads = prepare_payloads(text)
+    payloads = prepare_payloads(text, voice=voice)
     resp = request_gTTS(*payloads)
     out_path = write_mp3(resp, fname=fname)
     
@@ -86,4 +86,4 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         main(int(sys.argv[1]))
     else:
-        main(0)
+        main(0, voice=None)
